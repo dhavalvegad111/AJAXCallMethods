@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Data Fetching Methods</title>
+    <!-- utilities -->
+    <link rel="stylesheet" href="https://webdevelopmentutilities.on.drv.tw/www.webutilities.dev/css/utilities.css"/>
+    <!-- bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" />
+    <!-- font awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/brands.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/fontawesome.min.css" />
+
+    <style>
+        .output_table .heading {
+            filter: drop-shadow(1px 1px 1px #999);
+        }
+
+        .output_table .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            background: chocolate;
+            font-weight: 600;
+            margin: 10px 0;
+            color: var(--white);
+            transition: .3s all linear;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .output_table .btn:hover {
+            background: rgb(245, 123, 36);
+        }
+
+        table {
+            border-collapse: inherit;
+        }
+
+        table thead tr th {
+            min-width: calc(100% / auto - 0);
+        }
+
+        /* responsive */
+        @media screen and (max-width:1200px) {}
+
+        @media screen and (max-width:992px) {}
+
+        @media screen and (max-width:768px) {
+            .box {
+                overflow-x: auto;
+            }
+
+            .box table {
+                white-space: nowrap;
+            }
+        }
+
+        @media screen and (max-width:576px) {
+            .output_table .btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media screen and (max-width:425px) {}
+    </style>
+</head>
+
+<body>
+    <section class="output_table ww:100">
+        <div class="container">
+            <div class="heading display:inline-block pt:20 pb:10 weight:lighter md:size:30 sm:size:25 size:20">API Data
+                Fetching Methods</div>
+            <div class="buttons bg:gray-400 p:20 radius:5 my:10">
+                <a href="" class="btn btn1">jQuery AJAX</a>
+                <a href="" class="btn btn2">Fetch API</a>
+                <a href="" class="btn btn3">XMLHttpRequest</a>
+                <a href="" class="btn btn4">Axios</a>
+            </div>
+            <div
+                class="box display:flex flex-direction:column align-items:center justify-content:center p:20 radius:5 bg:gray-400">
+                <table class="table table-striped">
+                    <thead class="table-secondary size:16 weight:600">
+                        <tr>
+                            <th class="vertical:middle" scope="col">ID</th>
+                            <th class="vertical:middle" scope="col">Name</th>
+                            <th class="vertical:middle" scope="col">Username</th>
+                            <th class="vertical:middle" scope="col">Email</th>
+                            <th class="vertical:middle" scope="col">City - Zipcode</th>
+                            <th class="vertical:middle" scope="col">Phone</th>
+                            <th class="vertical:middle" scope="col">Website</th>
+                            <th class="vertical:middle" scope="col">Company</th>
+                        </tr>
+                    </thead>
+                    <tbody class="size:14 weight:500">
+                        <tr class="loader_row display:none">
+                            <td colspan="8">
+                                <i class="fa fa-cog fa-spin fa-3x"></i>
+                            </td>
+                        </tr>
+                        <!-- Response Data Injection -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.min.js"></script>
+    <!-- font awesome JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+
+
+    <script>
+        (() => {
+
+            var url = 'https://jsonplaceholder.typicode.com/users';
+
+            // jQuery ajax() Method
+            function _jquery_ajax() {
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    dataType: 'text',
+                    beforeSend: beforeSend,
+                    success: success,
+                    error: error,
+                    complete: complete
+                });
+
+                function beforeSend() {
+                    $('.loader_row').removeClass('display:none');
+                }
+                function success(result, status) {
+                    data = JSON.parse(result);
+                    console.log(data);
+                    responseDataInjection(data);
+                }
+                function error(error, status) {
+                    console.log('Error occurred: ' + status);
+                }
+                function complete() {
+                    console.log('Completed...');
+                }
+            }
+
+
+            // Fetch API
+            function _fetch_api() {
+            const fetchAPI = fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log((data));
+                    responseDataInjection(data);
+                })
+                .catch((error) => { console.log('Error occurred: ' + error); })
+                .finally(() => { console.log('Completed...') })
+            }
+            window.onload = async () => {
+                await $('.loader_row').removeClass('display:none');
+            }         
+
+            // AJAX - XMLHttpRequest
+            function _xmlhttprequest() {
+                var x = new XMLHttpRequest();
+                x.onloadstart = () => {
+                    $('.loader_row').removeClass('display:none');
+                };
+                x.open('GET', url, true);
+                // x.onload = function(){if(x.status == 200){}}
+                x.onreadystatechange = function () {
+                    if (x.readyState == 4 && x.status == 200) {
+                        let data = JSON.parse(x.responseText);
+                        console.log(data);
+                        responseDataInjection(data);
+                    }
+                };
+                x.onerror = function (error) {
+                    console.log('Error occurred: ', + error)
+                }
+                x.onloadend = function () {
+                    console.log('Completed...');
+                };
+                x.send();
+            }
+
+
+            // Axios
+            function _axios() {
+                axios.get(url)
+                    .then(result => {
+                        data = result.data;
+                        console.log(data);
+                        responseDataInjection(data);
+                    })
+                    .catch(error => console.log(error))
+                    .finally(() => { console.log('Completed...') })
+            }
+
+
+            function responseDataInjection(data) {
+                let html = "";
+                for (let i = 0; i < data.length; i++) {
+                    html += `<tr>
+                                <th class="vertical:middle" scope="row">${data[i].id}</th>
+                                <td class="vertical:middle">${data[i].name}</td>
+                                <td class="vertical:middle">${data[i].username}</td>
+                                <td class="vertical:middle">${data[i].email}</td>
+                                <td class="vertical:middle">${data[i].address.city} - ${data[i].address.zipcode}</td>
+                                <td class="vertical:middle">${data[i].phone}</td>
+                                <td class="vertical:middle">${data[i].website}</td>
+                                <td class="vertical:middle">${data[i].company.name}</td>
+                            </tr>`;
+                    $('.output_table').find('table tbody').html(html);
+                }
+                console.log('Success..');
+            }
+
+
+            $('.box').hide();
+            $('.btn1').on('click', function (e) {
+                e.preventDefault();
+                let title = document.title = 'jQuery AJAX';
+                $('.heading').html(title);
+                $('.box').show();
+                _jquery_ajax();
+            });
+
+            $('.btn2').on('click', function (e) {
+                e.preventDefault();
+                let title = document.title = 'Fetch API';
+                $('.heading').html(title);
+                $('.box').show();
+                _fetch_api();
+            });
+
+            $('.btn3').on('click', function (e) {
+                e.preventDefault();
+                let title = document.title = 'XMLHttpRequest';
+                $('.heading').html(title);
+                $('.box').show();
+                _xmlhttprequest();
+            });
+
+            $('.btn4').on('click', function (e) {
+                e.preventDefault();
+                let title = document.title = 'Axios';
+                $('.heading').html(title);
+                $('.box').show();
+                _axios();
+            });
+
+        })()
+
+    </script>
+</body>
+
+</html>
